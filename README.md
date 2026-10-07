@@ -44,8 +44,8 @@ pip install -e .
 ```python
 from proyecto.db import cargar_precios, conectar, consultar
 
-con = conectar()                                # data/proyecto.duckdb
-cargar_precios(con)                             # tabla `precios` desde el CSV
+con = conectar()  # data/proyecto.duckdb
+cargar_precios(con)  # tabla `precios` desde el CSV
 rendimientos = consultar(con, "rendimientos.sql")
 ```
 
