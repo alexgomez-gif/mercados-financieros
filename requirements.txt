@@ -12,6 +12,9 @@ sqlalchemy>=2.0
 # Notebooks
 jupyterlab>=4.0
 
+# Datos financieros
+yfinance>=0.2.50
+
 # Utilidades
 python-dotenv>=1.0
 

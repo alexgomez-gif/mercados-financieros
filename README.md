@@ -1,105 +1,85 @@
 # mercados-financieros
 
-> Una frase que explique qué problema resuelve este proyecto y para quién.
+> Análisis exploratorio y modelos de machine learning sobre precios diarios del
+> S&P 500, Bitcoin, Ecopetrol, Bancolombia y el dólar en Colombia (2015–hoy).
 
 ## Objetivo
 
-Describe la pregunta de negocio o de investigación, el alcance y los criterios de éxito.
+Entender cómo se comportan en rendimiento, riesgo y correlación activos de
+perfiles muy distintos, y evaluar si es posible anticipar la dirección del
+precio con modelos de machine learning.
+
+1. **Exploración (EDA):** rendimientos, volatilidad, caídas máximas y
+   correlaciones entre activos.
+2. **Machine learning:** clasificar si el precio sube o baja al día siguiente
+   y comparar contra una línea base ingenua.
+
+## Datos
+
+| Fuente | Activos | Ubicación | Actualización |
+|--------|---------|-----------|---------------|
+| [Yahoo Finance](https://finance.yahoo.com) vía `yfinance` | `SPY`, `BTC-USD`, `EC`, `CIB` (precios ajustados) | `data/raw/precios.csv` | Diaria |
+| [TRM – Superintendencia Financiera](https://www.datos.gov.co/Econom-a-y-Finanzas/Tasa-de-Cambio-Representativa-del-Mercado-TRM/32sa-8pi3) | Dólar en pesos (`TRM`) | `data/raw/precios.csv` | Diaria |
+
+El dólar se toma de la TRM oficial porque la serie `COP=X` de Yahoo Finance
+trae errores de escala (por ejemplo, 24,31 en lugar de 2.431 COP).
+
+Los datos **no se versionan**. Para descargarlos:
+
+```bash
+python -m proyecto.datos
+```
+
+## Instalación
+
+```bash
+python3.12 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+pip install -e .
+```
+
+## Uso
+
+```python
+from proyecto.db import cargar_precios, conectar, consultar
+
+con = conectar()                                # data/proyecto.duckdb
+cargar_precios(con)                             # tabla `precios` desde el CSV
+rendimientos = consultar(con, "rendimientos.sql")
+```
 
 ## Estructura del repositorio
 
 ```
 .
-├── data/
-│   ├── raw/          # Datos originales, inmutables (no versionados)
-│   ├── interim/      # Datos intermedios en transformación
-│   └── processed/    # Datos finales listos para modelar o analizar
-├── notebooks/        # Exploración y análisis (prefijo numérico: 01_exploracion.ipynb)
-├── src/
-│   └── proyecto/     # Código reutilizable importable desde notebooks y scripts
-├── sql/              # Consultas SQL (extracción, vistas, transformaciones)
-├── reports/
-│   └── figures/      # Gráficos e informes generados
-├── tests/            # Pruebas unitarias (pytest)
-├── pyproject.toml    # Metadatos del paquete y configuración de ruff/pytest
-├── requirements.txt  # Dependencias
-├── .github/          # CI: ruff y pytest en cada push
-└── README.md
+├── data/raw/            # precios.csv descargado (no versionado)
+├── notebooks/           # 01_exploracion.ipynb, 02_modelo.ipynb, ...
+├── src/proyecto/
+│   ├── datos.py         # descarga de Yahoo Finance y TRM
+│   ├── db.py            # DuckDB: carga y consultas
+│   └── config.py        # rutas del proyecto
+├── sql/rendimientos.sql # rendimientos diarios con funciones de ventana
+├── reports/figures/     # gráficos generados
+└── tests/               # pytest
 ```
-
-## Requisitos
-
-- Python 3.12
-- Git
-- VS Code (extensiones recomendadas en `.vscode/extensions.json`)
-- DuckDB (incluido como paquete de Python; la CLI `duckdb` es opcional)
-
-## Instalación
-
-Cada proyecto tiene su propio entorno virtual en `.venv/`:
-
-```bash
-python3.12 -m venv .venv
-source .venv/bin/activate        # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
-pip install -e .                 # Instala src/proyecto en modo editable
-```
-
-VS Code detecta `.venv` automáticamente (ver `.vscode/settings.json`).
-
-## Uso
-
-```bash
-# Abrir los notebooks
-jupyter lab
-```
-
-Desde un notebook o script, importa el código del paquete:
-
-```python
-from proyecto.config import RAW_DIR, leer_sql
-from proyecto.db import conectar, consultar
-
-con = conectar()  # data/proyecto.duckdb
-df = consultar(con, "ejemplo.sql")  # ejecuta sql/ejemplo.sql
-```
-
-Para Power BI, exporta las tablas finales a `data/processed/` (CSV o Parquet)
-y cárgalas desde Power BI Desktop; guarda los `.pbix` en `reports/`.
 
 ## Calidad de código
 
-El estilo se controla con [ruff](https://docs.astral.sh/ruff/) (configurado en `pyproject.toml`).
-
 ```bash
-ruff check .            # Linter
-ruff check . --fix      # Corrige automáticamente lo posible
-ruff format .           # Formatea el código
-pytest                  # Ejecuta las pruebas
+ruff check . && ruff format --check . && pytest
 ```
 
-## Datos
-
-| Fuente | Descripción | Ubicación | Actualización |
-|--------|-------------|-----------|---------------|
-| _ejemplo_ | _Ventas diarias_ | `data/raw/ventas.csv` | _Diaria_ |
-
-Los datos **no se versionan** en git. Documenta aquí cómo obtenerlos o regenerarlos.
+El CI de GitHub Actions ejecuta lo mismo en cada push.
 
 ## Resultados
 
-Resume los hallazgos principales y enlaza a los informes en `reports/`.
-
-## Convenciones
-
-- Los notebooks se nombran `NN_descripcion.ipynb` (p. ej. `01_exploracion.ipynb`).
-- La lógica reutilizable vive en `src/`, no en los notebooks.
-- Los datos en `data/raw/` nunca se modifican.
+_En progreso._
 
 ## Autoría
 
-- Nombre — correo@ejemplo.com
+Alex Gómez — [github.com/alexgomez-gif](https://github.com/alexgomez-gif)
 
 ## Licencia
 
-Indica la licencia del proyecto (p. ej. MIT).
+MIT

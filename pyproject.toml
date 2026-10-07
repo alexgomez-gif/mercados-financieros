@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "mercados-financieros"
 version = "0.1.0"
-description = "Descripción breve del proyecto"
+description = "Análisis exploratorio y machine learning sobre precios de mercados financieros"
 requires-python = ">=3.12"
 
 [tool.setuptools.packages.find]

@@ -6,4 +6,4 @@ def test_raiz_contiene_pyproject():
 
 
 def test_leer_sql():
-    assert "SELECT" in leer_sql("ejemplo.sql").upper()
+    assert "SELECT" in leer_sql("rendimientos.sql").upper()
